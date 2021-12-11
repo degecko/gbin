@@ -18,9 +18,10 @@ This will have the same effect as ?php, but it will also activate the line numbe
 
 ## Installation
 
-Download the code from this repo, either by running `git@github.com:degecko/gbin.git` or by downloading a ZIP file of this repo.
+Download the code from this repo, either by running `git clone git@github.com:degecko/gbin.git` or by downloading a ZIP file of this repo.
 
 ### Password based by default
+
 The script requires a password to work. If you've just installed it, there will be no password set, so you need to set one.
 
 ### Setting the password
