@@ -101,7 +101,6 @@ function get_highlighted_code(string $path): string
 
     [$info, $code] = explode(UPLOADED_FILE_SEP, file_get_contents($path), 2);
     $info = unserialize($info);
-    $code = htmlentities($code);
     $title = implode(' &bull; ', [
         htmlentities($info->name),
         $info->size,
@@ -123,6 +122,7 @@ function get_highlighted_code(string $path): string
     ';
 
     if ($lang) {
+        $code = htmlentities($code);
         $result .= "<pre><code class=\"hljs $lang\">$code</code></pre><script>hljs.highlightAll()</script>";
 
         if (isset($_GET['ln'])) {
