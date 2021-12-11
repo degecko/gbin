@@ -4,15 +4,15 @@ This is a minimalist self-hosted private paste bin script. It includes the optio
 
 #### Examples:
 
-https://gbin.url/AAAA
+https://example.com/AAAA
 
 This will display the content as raw (plain text).
 
-https://gbin.url/AAAA?php
+https://example.com/AAAA?php
 
 This will try to highlight PHP code, if it exists. It silently fails if the code is of some other language.
 
-https://gbin.url/AAAA?php&ln
+https://example.com/AAAA?php&ln
 
 This will have the same effect as ?php, but it will also activate the line numbers.
 
@@ -47,7 +47,7 @@ If you make this publicly accessible, you might run into issues using a random I
 You can use it directly in the browser by visiting the domain name where you've installed it, or via CLI, using curl:
 
 ```
-cat file.log | curl https://your.site -F 'file=<-' -F 'pw=YOUR-PASSWORD'
+cat file.log | curl https://example.com -F 'file=<-' -F 'pw=YOUR-PASSWORD'
 ```
 
 You can omit the `-F 'pw=YOUR-PASSWORD'` part if you've disabled the password protection.
@@ -56,7 +56,7 @@ You might want to turn that into a function and store it in `~/.bashrc`, or your
 
 ```
 gbin () {
-    curl https://your.site -F 'file=<-' -F 'pw=YOUR-PASSWORD'
+    curl https://example.com -F 'file=<-' -F 'pw=YOUR-PASSWORD'
 }
 ```
 
@@ -79,8 +79,8 @@ This is an example of a Nginx configuration that you could use.
 
 server {
     listen 80;
-    server_name code.mysite.com;
-    root /var/www/code.mysite.com;
+    server_name example.com;
+    root /var/www/example.com;
     index index.php;
 
     location / {
