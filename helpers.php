@@ -122,7 +122,7 @@ function get_highlighted_code(string $path): string
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
     ';
 
-    try {
+    if ($lang) {
         $result .= "<pre><code class=\"hljs $lang\">$code</code></pre><script>hljs.highlightAll()</script>";
 
         if (isset($_GET['ln'])) {
@@ -132,7 +132,7 @@ function get_highlighted_code(string $path): string
         header('content-type: text/html; charset=utf-8');
 
         return $result;
-    } catch (DomainException $e) {
+    } else {
         header('content-type: text/plain; charset=utf-8');
 
         die($code);
