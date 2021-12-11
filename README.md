@@ -28,7 +28,7 @@ The script requires a password to work. If you've just installed it, there will 
 Run this in a terminal inside the project's dir:
 
 ```
-php -r 'file_put_contents(".password", sha1("YOUR SECRET PASSWORD"));'
+php -r "file_put_contents('.password', password_hash('YOUR SECRET PASSWORD', PASSWORD_BCRYPT));"
 ```
 
 The password will be encrypted and stored in the .password file. Don't make that file publicly accessible.

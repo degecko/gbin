@@ -25,12 +25,15 @@ function valid_password(): bool
         return true;
     }
 
-    $toCheck = $_COOKIE['pw'] ?? sha1($_REQUEST['pw'] ?? '');
-    $isValid = $toCheck === $pw = trim(file_get_contents(__DIR__ . '/.password'));
+    $passwordHash = trim(file_get_contents(__DIR__ . '/.password'));
 
-    $isValid and setcookie('pw', $pw, time() * 2);
+    if (! password_verify($_COOKIE['pw'] ?? $_REQUEST['pw'] ?? '', $passwordHash)) {
+        return false;
+    }
 
-    return $isValid;
+    setcookie('pw', $passwordHash, strtotime('+1 week'));
+
+    return true;
 }
 
 function validate_file_upload(): stdClass
