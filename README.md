@@ -2,17 +2,28 @@
 
 This is a minimalist self-hosted private paste bin script. It includes the option to use a syntax highlighter, and a line numbers toggle.
 
-#### Examples:
+## Preview images
 
-https://gbin.url/AAAA
+Upload page (index):
+
+![](https://i.imgur.com/59mzUXb.png)
+
+Paste page:
+
+![](https://i.imgur.com/8sL8NSN.png)
+
+### Examples:
+(These are just example URLs and are not supposed to work.)
+
+https://gbin.example.com/AAAA
 
 This will display the content as raw (plain text).
 
-https://gbin.url/AAAA?php
+https://gbin.example.com/AAAA?php
 
 This will try to highlight PHP code, if it exists. It silently fails if the code is of some other language.
 
-https://gbin.url/AAAA?php&ln
+https://gbin.example.com/AAAA?php&ln
 
 This will have the same effect as ?php, but it will also activate the line numbers.
 
