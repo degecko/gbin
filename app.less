@@ -2,11 +2,16 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-size: 16px;
   line-height: 16px;
   overflow: hidden;
+  min-height: 100%;
 
   > pre {
     margin: 0;
@@ -14,6 +19,43 @@ body {
 
     > code {
       height: 100%;
+    }
+  }
+
+  &.home {
+    display: flex;
+    justify-content: center;
+    padding-top: 4rem;
+    font-family: sans-serif;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #222;
+      color: #9d9baf;
+    }
+
+    .error {
+      background-color: #e34314;
+      color: #fff;
+      padding: .5rem 1rem;
+      border-radius: 4px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    }
+
+    form {
+      margin-top: 2rem;
+
+      [name=file] {
+        position: fixed;
+        inset: 0;
+        opacity: 0;
+        z-index: 10;
+        width: 100%;
+      }
+
+      [name=pw], [type=submit] {
+        position: relative;
+        z-index: 11;
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/helpers.php';
 
-valid_password() or die('Bye');
+valid_password() or go_back('Invalid password!');
 
 $file = validate_file_upload();
 $name = substr($file->name ?? '', 0, 128);

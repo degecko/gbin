@@ -72,29 +72,7 @@ To be able to access the app, you need to setup a web server to point the domain
 
 ### Nginx configuration
 
-This is an example of a Nginx configuration that you could use.
-
-```
-# File: /etc/nginx/sites-enabled/code.mysite.com.conf
-
-server {
-    listen 80;
-    server_name code.mysite.com;
-    root /var/www/code.mysite.com;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php-fpm.sock; # Update this with your own FPM sock location. It's usually under /var, so you can search for it with: find /var -name '*.sock'
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-}
-```
+There's an example configuration under stubs/nginx.conf.
 
 ## Dependencies
 

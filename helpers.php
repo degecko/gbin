@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 define('URI', getenv('REQUEST_URI'));
 define('IS_POST', getenv('REQUEST_METHOD') === 'POST');
 define('SIZE_LIMIT', 10e6);
@@ -25,12 +27,68 @@ function valid_password(): bool
         return true;
     }
 
-    $toCheck = $_COOKIE['pw'] ?? sha1($_REQUEST['pw'] ?? '');
-    $isValid = $toCheck === $pw = trim(file_get_contents(__DIR__ . '/.password'));
+    if (isset($_POST['pw']) && ! empty($_POST['pw'])) {
+        $toCheck = $_POST['pw'];
+    } elseif (isset($_COOKIE['pw'])) {
+        $toCheck = decrypt($_COOKIE['pw']);
+    } else {
+        return false;
+    }
 
-    $isValid and setcookie('pw', $pw, time() * 2);
+    $password = trim(file_get_contents(__DIR__ . '/.password'));
 
-    return $isValid;
+    if (password_verify(fu_password($toCheck), $password)) {
+        setcookie('pw', encrypt($toCheck), time() * 2);
+
+        return true;
+    }
+
+    return false;
+}
+
+function fu_password(string $password): string
+{
+    return " $password . $password ";
+}
+
+function password(string $plain): string
+{
+    return password_hash(fu_password($plain), CRYPT_BLOWFISH);
+}
+
+function encrypt($content): string
+{
+    if (! is_string($content)) {
+        $content = json_encode($content);
+    }
+
+    $ivlen = openssl_cipher_iv_length('blowfish');
+    $iv = openssl_random_pseudo_bytes($ivlen);
+    $encryted = openssl_encrypt($content, 'blowfish', sha1('gBin'), iv: $iv);
+
+    return urlencode(sprintf('%s %s', base64_encode($encryted), base64_encode($iv)));
+}
+
+function decrypt(string $encrypted): mixed
+{
+    try {
+        [$encrypted, $iv] = explode(' ', urldecode($encrypted));
+        $encrypted = base64_decode($encrypted);
+        $iv = base64_decode($iv);
+        $decrypted = openssl_decrypt($encrypted, 'blowfish', sha1('gBin'), iv: $iv);
+    } catch (\Exception $_) {
+        return null;
+    }
+
+    if (preg_match('#[^a-z0-9 !@\#$%^&*()_+}{":<>?/,.;\[\]\'=\\\-]#i', $decrypted)) {
+        return null;
+    }
+
+    try {
+        return json_decode($decrypted) ?: $decrypted;
+    } catch (\Exception $_) {
+        return $decrypted;
+    }
 }
 
 function validate_file_upload(): stdClass
@@ -39,7 +97,7 @@ function validate_file_upload(): stdClass
     if (isset($_POST['file'])) {
         $size = strlen($_POST['file']);
 
-        $size > SIZE_LIMIT and die('Too large');
+        $size > SIZE_LIMIT and go_back('Too large');
 
         return (object) [
             'name' => 'No name.',
@@ -49,7 +107,7 @@ function validate_file_upload(): stdClass
     }
 
     if (! isset($_FILES, $_FILES['file'])) {
-        die('No file');
+        go_back('No file');
     }
 
     $file = (object) $_FILES['file'];
@@ -60,14 +118,14 @@ function validate_file_upload(): stdClass
 
     match ($file->error) {
         UPLOAD_ERR_OK => null,
-        UPLOAD_ERR_NO_FILE => die('No file sent'),
+        UPLOAD_ERR_NO_FILE => go_back('No file sent'),
         UPLOAD_ERR_INI_SIZE,
-        UPLOAD_ERR_FORM_SIZE => die('Exceeded filesize limit'),
-        default => die('Unknown errors'),
+        UPLOAD_ERR_FORM_SIZE => go_back('Exceeded filesize limit'),
+        default => go_back('Unknown errors'),
     };
 
     if ($file->size > SIZE_LIMIT) {
-        die('Too large');
+        go_back('Too large');
     }
 
     return $file;
@@ -144,4 +202,12 @@ function human_fs($bytes, $decimals = 2) {
     $factor = floor((strlen($bytes) - 1) / 3);
 
     return sprintf("%.{$decimals}f ", $bytes / pow(1024, $factor)) . $size[$factor];
+}
+
+function go_back(string $error): void
+{
+    $_SESSION['error'] = $error;
+
+    header('location: /');
+    exit;
 }
