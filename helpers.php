@@ -169,12 +169,8 @@ function get_highlighted_code(string $path): string
     $lang = current(array_keys($_GET ?? ['invalid']));
     $result = '
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
-        <link rel="stylesheet" href="//highlightjs.org/static/demo/styles/base16/atelier-plateau-light.css">
-        <style>
-            @media (prefers-color-scheme: dark) {
-               @import url(//highlightjs.org/static/demo/styles/base16/ros-pine-moon.css);
-            }
-        </style>
+        <link rel="stylesheet" href="//highlightjs.org/static/demo/styles/base16/atelier-plateau-light.css" media="(prefers-color-scheme: light)">
+        <link rel="stylesheet" href="//highlightjs.org/static/demo/styles/base16/ros-pine-moon.css" media="(prefers-color-scheme: dark)">
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
     ';
