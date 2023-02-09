@@ -16,8 +16,7 @@ restart() {
   docker restart -t 5 $@
 }
 
-run composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction &&
-  rebuild --build codeg-php &&
+rebuild --build codeg-php &&
   rebuild codeg &&
   restart octane &&
   run artisan horizon:terminate &&
