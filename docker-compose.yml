@@ -1,158 +1,46 @@
 version: '3'
 
 networks:
-  mentech-net:
+  codeg-net:
     driver: bridge
 
 services:
-  mentech:
+  codeg:
     image: nginx:stable-alpine
-    container_name: mentech
+    container_name: codeg
     restart: unless-stopped
     ports:
-      - '${APP_PORT:-80}:80'
+      - '${APP_PORT:-8008}:80'
     volumes:
       - .:/var/www:delegated
       - ./server/nginx/nginx.conf:/etc/nginx/nginx.conf:delegated
       - ./server/nginx/default.conf:/etc/nginx/conf.d/default.conf:delegated
     depends_on:
       - php
-      - redis
-      - mysql
-      - horizon
-      - octane
-      - cron
-      - elasticsearch
     networks:
-      - mentech-net
+      - codeg-net
 
   php:
-    image: mt.php:latest
+    image: codeg.php:latest
     build:
       context: .
       dockerfile: server/php.dockerfile
       args:
         - APP_ENV=${APP_ENV}
-    container_name: mt-php
+    container_name: codeg-php
     restart: unless-stopped
     volumes:
       - .:/var/www:delegated
     networks:
-      - mentech-net
-
-  mysql:
-    image: mariadb:10.10
-    container_name: mt-mysql
-    restart: unless-stopped
-    tty: true
-    ports:
-      - ${FORWARD_DB_PORT:-33065}:3306
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
-    volumes:
-      - ./server/mysql/tuning.cnf:/etc/mysql/conf.d/99-tuning.cnf
-      - ./storage/data/mysql:/var/lib/mysql:delegated
-    networks:
-      - mentech-net
-
-  redis:
-    image: redis:alpine
-    container_name: mt-redis
-    restart: unless-stopped
-    volumes:
-      - ./storage/data/redis:/data:delegated
-    networks:
-      - mentech-net
-
-  horizon:
-    image: mt.php:latest
-    container_name: mt-horizon
-    restart: unless-stopped
-    volumes:
-      - .:/var/www:delegated
-    command: [ 'php', '/var/www/artisan', 'horizon' ]
-    depends_on:
-      - php
-    networks:
-      - mentech-net
-
-  octane:
-    image: mt.php:latest
-    container_name: mt-octane
-    restart: unless-stopped
-    expose:
-      - 8000
-    volumes:
-      - .:/var/www:delegated
-    command: [ 'php', '/var/www/artisan', 'octane:start', '--host=octane', '--watch' ]
-    depends_on:
-      - php
-    networks:
-      - mentech-net
-
-  cron:
-    image: mt.php:latest
-    container_name: mt-cron
-    restart: unless-stopped
-    volumes:
-      - .:/var/www:delegated
-      - ./server/crontab:/etc/crontabs/root:delegated
-    command: [ 'crond', '-f' ]
-    depends_on:
-      - php
-    networks:
-      - mentech-net
-
-  elasticsearch:
-    image: elasticsearch:7.17.8
-    container_name: mt-elasticsearch
-    restart: unless-stopped
-    expose:
-      - 9200
-      - 9300
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
-    volumes:
-      - ./storage/data/elasticsearch:/usr/share/elasticsearch/data:delegated
-    networks:
-      - mentech-net
-
-  npm:
-    image: node:16-alpine
-    container_name: mt-npm
-    volumes:
-      - .:/var/www:delegated
-    ports:
-      - '3000:3000'
-      - '3001:3001'
-    working_dir: /var/www
-    entrypoint: [ 'npm' ]
-    networks:
-      - mentech-net
+      - codeg-net
 
   composer:
     image: composer:2
-    container_name: mt-composer
+    container_name: codeg-composer
     working_dir: /var/www
     volumes:
       - .:/var/www:delegated
     user: root
     entrypoint: [ 'composer', '--ignore-platform-reqs' ]
     networks:
-      - mentech-net
-
-  artisan:
-    image: mt.php:latest
-    container_name: mt-artisan
-    volumes:
-      - .:/var/www:delegated
-    user: root
-    entrypoint: [ 'php', 'artisan' ]
-    networks:
-      - mentech-net
+      - codeg-net
